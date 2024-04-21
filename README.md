@@ -1,300 +1,231 @@
-# Looking for Maintainer
+The [Zettelkasten](#Zettelkasten-Embracing-Tags-Over-Folders) note-taking method gathers all assorted notes, *Zettels* in german, in a single folder, *Kasten*, as crawlable text (or markdown) files that can be interlinked by name.
 
-I don't have time to maintain this project anymore. If you are interested in
-taking over, please contact me in the GitHub issues.
+`Zappykasten` is a Vim plug-in that lets you
 
-# Notational FZF
+- instantly crawl (various) folders (thanks to [fzf](https://github.com/junegunn/fzf) and [ripgrep](https://github.com/BurntSushi/ripgrep))
+- automatically create a note with the designated search terms if it is yet absent,
+- insert a link to a note through content searches, and
+- open linked notes by placing the cursor near the link
 
-***Loosen the mental blockages to recording information. Scrape away the
-tartar of convention that handicaps its retrieval.***
+## Requirements
 
---- [Notational Velocity home page](http://notational.net/)
-
-Notational Velocity is a note-taking app where searching for a note and
-creating one are the same operation.
-
-You search for a query, and if no note matches, it creates a new note
-with that query as the title.
-
-## Usage
-
-See the following GIF or watch this
-[asciinema](https://asciinema.org/a/oXAsE6lDnywkrSSH5xuOIVQuO):
-
-![Usage](/screenshots/usage.gif?raw=true "Usage")
+`Zappykasten` should work on Linux, Mac and Microsoft Windows, notably in Git Bash.
+Ensure you have Vim installed along with [Ripgrep](https://github.com/BurntSushi/ripgrep) and [FZF](https://github.com/junegunn/fzf);
+these tools are necessary for the plugin to function correctly.
+To install `ripgrep` and `fzf`, either use your package manager or download a binary from their release pages [Ripgrep](https://github.com/BurntSushi/ripgrep/releases) and [FZF](https://github.com/junegunn/fzf/releases) and place it in your `$PATH`.
 
 ## Installation
 
-``` {.vim}
-" with vim-plug
-Plug 'https://github.com/alok/notational-fzf-vim'
+If you use [vim-plug](https://github.com/junegunn/vim-plug), then in the vim-plug block in your `.vimrc` file, add the following line between the `plug#begin` and `plug#end` calls:
+
+```vim
+Plug 'Konfekt/zappykasten.vim'
 ```
 
-## Changes
+## Initial Setup
 
-Read `CHANGELOG.md`.
+Set the directories in which to search for notes and a *main* directory, in which to store new notes (which both default to `~/zettelkasten`):
 
-## Description
+```vim
+let g:zk_search_paths = [$HOME . '/zettelkasten']
+let g:zk_main_directory = g:zk_search_paths[0]
+" let g:zk_search_paths += [$HOME . '/diary']
+" let g:zk_search_paths += [$HOME . '/Desktop']
+```
 
-Vim is great for writing. But it isn't optimized for note-taking, where
-you often create lots of little notes and frequently change larger notes
-in a separate directory from the one you're working in. For years I used
-[nvALT](http://brettterpstra.com/projects/nvalt/) and whenever I had to
-do serious editing, I would open the file in Vim.
+If you come from [Alok Singh's notational-fzf-vim](https://github.com/alok/notational-fzf-vim), then it should be a matter of simply replacing all occurrences of initial `nv` in the variable names by `zk`.
+On Microsoft Windows, all paths are assumed to be either on mounted drives or UNC sharepoints depending on g:zk_main_directory.
 
-But some things about nvALT bugged me.
+## Instructions
 
--   It's not meant for large text files, and opening them will cause it
-    to lag *a lot*.
+To use `Zappykasten`:
 
--   I can't use splits
+- Type `:ZK` to search for notes by content.
+    If a note doesn't exist, it will be created with a title derived from your search terms.
+    (Use a mapping, say `nnoremap m, :<c-u>ZK<cr>` for faster access.)
+- Press `gf` to jump to a note when the cursor is on a link (to a file name or URL).
+- Hit `Ctrl-z` to insert a link to a note, searching for the term before the cursor, which can be refined in a fuzzy searcher.
+    The inserted path will be relative to the directory containing the currently opened note (which usually is `g:zk_maindir`).
 
--   I do most of my work in Vim, so why have another window open,
-    wasting precious screen space with its inferior editing
-    capabilities. Sorry Brett, but nvALT can't match Vim's editing
-    speed.
+## Key Bindings
 
--   I also disagree with some parts of Notational Velocity's philosophy.
+- `<c-z>`: Insert a link to a note.
+- `ctrl-x`: Create a new note.
+- `ctrl-y`: Yank the selected filenames.
+- `ctrl-s`: Split the current window.
+- `ctrl-v`: Create a vertical split.
+- `ctrl-t`: Open a new tab with the note.
 
-Plugins like [vim-pad](https://github.com/fmoralesc/vim-pad) didn't do
-it for me either, because:
+## Configuration
 
--   I don't want to archive my notes. I should be able to just search
-    for them.
--   I don't want to use the first line as the title since I have notes
-    with duplicated titles in different directories, like `README.md`.
--   I just want to be able to search a set of directories and create
-    notes in one of them, ***quickly***.
+- Default Extension: Specifies the default file extension for new notes.
+```
+let g:zk_default_extension = '.md'
+```
 
-When [Junegunn](https://github.com/junegunn/) created
-[`fzf`](https://github.com/junegunn/fzf), I realized that I could have
-all that, in Vim.
+- Insert Link to Note Key: Defines the key binding to insert a link to a note.
+```
+let g:zk_insert_note_key = '<c-z>'
+```
 
-This plugin allows you to define a list of directories that you want to
-search. The first directory in the list is used as the main directory,
-unless you set `g:nv_main_directory`. If you press `control-x` after
-typing some words, it will use those words as the filename to create a
-file in the main directory. It will then open that file in a vertical
-split. If that file already exists, don't worry, it won't overwrite it.
-This plugin never modifies your files at any point. It can only read,
-open, and create them.
+- Insert Link to Note Path: can be
 
-You can define relative links, so adding `./docs` and `./notes` will
-work. Keep in mind that it's relative to your current working directory
-(as Vim interprets it).
+    - 'relative' : insert the path relative to the directory of the current file
+    - 'absolute' : insert the absolute path of the file (with a tilde for the home directory)
+    - 'name' : insert only the name of the file
 
-## Dependencies
-
--   [`rg`](https://github.com/BurntSushi/ripgrep) is required for its
-    fast search.
-
--   [`fzf`](https://github.com/junegunn/fzf).
-
--   `fzf` Vim plugin. Install the Vim plugin that comes with `fzf`,
-    which can be done like so if you use
-    [vim-plug](https://github.com/junegunn/vim-plug).
-
-    ``` {.vim}
-    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    ```vim
+    let g:zk_insert_note_path = 'name'
     ```
 
--   Python 3.5 or higher, for the preview window and filepath
-    shortening.
-
-## Optional dependencies
-
--   Pypy 3, for a potential speedup
-
-## Required Settings
-
-You have to define a list of directories **or** files (which all must be
-strings) to search. This setting is named `g:nv_search_paths`.
-
-Remember that these can be relative links.
-
-``` {.vim}
-" example
-let g:nv_search_paths = ['~/wiki', '~/writing', '~/code', 'docs.md' , './notes.md']
+- Create Note Key: Defines the key binding to create a new note.
+```
+let g:zk_create_note_key = 'ctrl-x'
 ```
 
-## Detailed Usage
-
-This plugin unites searching and file creation. It defines a single
-command `:NV`, which can take 0 or more arguments, which are interpreted
-as regexes.
-
-Type `:NV` or bind it to a mapping to bring up a fuzzy search menu. Type
-in your search terms and it will fuzzy search for them. Adding an
-exclamation mark to the command (`:NV!`), will run it fullscreen.
-
-You can type `:NV` to see all results, and then filter them with FZF.
-You can type `:NV python` to restrict your initial search to lines that
-contain the phrase `python`. `:NV [0-9] [0-9]` will find all numbers
-separated by a space. You know, regexes.
-
-It does not search in a fully fuzzy fashion because that's less useful
-for prose. It looks for full words, but they don't have to be next to
-each other, just on the same line. You can use the arrow keys or `c-p`
-and `c-n` to scroll through the search results, and then hit one of
-these keys to open up a file:
-
-Note that the following options can be customized.
-
--   `c-x`: Use search string as filename and open in vertical split.
--   `c-v`: Open in vertical split
--   `c-s`: Open in horizontal split
--   `c-t`: Open in new tab
--   `c-y`: Yank the selected filenames
--   `<Enter>`: Open highlighted search result in current buffer
-
-The lines around the selected file will be visible in a preview window.
-
-## Mappings
-
-This plugin only defines a command `:NV`, and if you want a mapping for
-it, you can define it yourself. This is intentionally not done by
-default. You should use whatever mapping(s) work best for you.
-
-For example,
-
-``` {.vim}
-nnoremap <silent> <c-s> :NV<CR>
+- Yank Key: Defines the key binding to yank selected filenames.
+```
+let g:zk_yank_key = 'ctrl-y'
 ```
 
-## Optional Settings and Their Defaults
-
-You can display the full path by setting `g:nv_use_short_pathnames = 0`.
-
-You can toggle displaying the preview window by pressing `alt-p`. This
-is handy on smaller screens. If you don't want to show the preview by
-default, set `g:nv_show_preview = 0`.
-
-``` {.vim}
-" String. Set to '' (the empty string) if you don't want an extension appended by default.
-" Don't forget the dot, unless you don't want one.
-let g:nv_default_extension = '.md'
-
-" String. Default is first directory found in `g:nv_search_paths`. Error thrown
-"if no directory found and g:nv_main_directory is not specified
-"let g:nv_main_directory = g:nv_main_directory or (first directory in g:nv_search_paths)
-
-" Dictionary with string keys and values. Must be in the form 'ctrl-KEY':
-" 'command' or 'alt-KEY' : 'command'. See examples below.
-let g:nv_keymap = {
-                    \ 'ctrl-s': 'split ',
-                    \ 'ctrl-v': 'vertical split ',
-                    \ 'ctrl-t': 'tabedit ',
-                    \ })
-
-" String. Must be in the form 'ctrl-KEY' or 'alt-KEY'
-let g:nv_create_note_key = 'ctrl-x'
-
-" String. Controls how new note window is created.
-let g:nv_create_note_window = 'vertical split'
-
-" Boolean. Show preview. Set by default. Pressing Alt-p in FZF will toggle this for the current search.
-let g:nv_show_preview = 1
-
-" Boolean. Respect .*ignore files in or above nv_search_paths. Set by default.
-let g:nv_use_ignore_files = 1
-
-" Boolean. Include hidden files and folders in search. Disabled by default.
-let g:nv_include_hidden = 0
-
-" Boolean. Wrap text in preview window.
-let g:nv_wrap_preview_text = 1
-
-" String. Width of window as a percentage of screen's width.
-let g:nv_window_width = '40%'
-
-" String. Determines where the window is. Valid options are: 'right', 'left', 'up', 'down'.
-let g:nv_window_direction = 'down'
-
-" String. Command to open the window (e.g. `vertical` `aboveleft` `30new` `call my_function()`).
-let g:nv_window_command = 'call my_function()'
-
-" Float. Width of preview window as a percentage of screen's width. 50% by default.
-let g:nv_preview_width = 50
-
-" String. Determines where the preview window is. Valid options are: 'right', 'left', 'up', 'down'.
-let g:nv_preview_direction = 'right'
-
-" String. Yanks the selected filenames to the default register.
-let g:nv_yank_key = 'ctrl-y'
-
-" String. Separator used between yanked filenames.
-let g:nv_yank_separator = "\n"
-
-" Boolean. If set, will truncate each path element to a single character. If
-" you have colons in your pathname, this will fail. Set by default.
-let g:nv_use_short_pathnames = 1
-
-"List of Strings. Shell glob patterns. Ignore all filenames that match any of
-" the patterns.
-let g:nv_ignore_pattern = ['summarize-*', 'misc*']
-
-" List of Strings. Key mappings like above in case you want to define your own
-" handler function. Most users won't want to set this to anything.
-
-let g:nv_expect_keys = []
+- Keymap: Custom key bindings for various note management actions.
+```
+let g:zk_keymap = {
+    \ 'ctrl-s': 'split ',
+    \ 'ctrl-v': 'vertical split ',
+    \ 'ctrl-t': 'tabedit ',
+    \ }
 ```
 
-### bat config
+- Include Hidden Files: Includes hidden files and folders in searches.
+```
+let g:zk_include_hidden = 0
+```
 
-If `bat` is in the PATH then it will be used. It will use `$BAT_THEME` if it's set.
+- Use Ignore Files: Respects ignore files (like .gitignore) in search paths.
+```
+let g:zk_use_ignore_files = 1
+```
 
-You can also define your own handler function, in case you don't like
-how this plugin handles input but like how it wraps everything else. It
-*must* be called `NV_note_handler`.
+- Ignore Patterns: additional ignore patterns.
+```
+let g:zk_ignore_pattern = ''
+```
 
-## Potential Use Cases
+- Use Short Pathnames: Truncates each path element to a single character.
+```
+let g:zk_use_short_pathnames = 1
+```
 
--   Add `~/notes` and `~/wiki` so your notes are only one key binding
-    away.
--   Add relative links like `./notes`, `./doc`, etc. to
-    `g:nv_search_paths` so you can always see/update the documentation
-    of your current project and keep up-to-date personal notes.
+- Window Width: Sets the width of the note window as a percentage of the screen's width.
+    By default it toggles between `40%` and `60%` depending on the number of screen lines.
+```
+let g:zk_window_width = '40%'
+```
 
-## Philosophy
+- Create Note Window: Controls how the new note window is created.
+```
+let g:zk_create_note_window = 'vertical split'
+```
 
-To quote [scrod](https://github.com/scrod/nv/issues/22),
+- Window Direction: Determines the placement of the note window.
+```
+let g:zk_window_direction = 'down'
+```
 
-> The reasoning behind Notational Velocity's present lack of
-> multi-database support is that storing notes in separate databases
-> would 1) Require the same kinds of decisions that
-> category/folder-based organizers force upon their users (e.g., "Is
-> this note going to be work-specific or home-specific?"), and 2) Defeat
-> the point of instantaneous searching by requiring, ultimately, the
-> user to repeat each search for every database in use.
+- Window Command: Specifies the command to open the note window.
+```
+let g:zk_window_command = 'call my_function()'
+```
 
--   By providing a default directory, we offer (one) fix to the first
-    issue.
+- Show Preview: Enables a preview window during searches.
+```
+let g:zk_show_preview = 1
+```
 
--   By searching the whole set of directories simultaneously, we handle
-    the second.
+- Wrap Preview Text: Enables text wrapping in the preview window.
+```
+let g:zk_wrap_preview_text = 1
+```
 
-It also handles Notational Velocity's issue with multiple databases.
-UNIX does not allow repeated filenames in the same folder, but often the
-parent folder provides context, like in `workout/TODO.md` and
-`coding/TODO.md`.
+- Preview Width: Sets the width of the preview window as a percentage of the screen's width.
+```
+let g:zk_preview_width = 50
+```
 
-This plug-in attempts to abstract the operation of note-taking over
-*all* the notes you take, with priority given to one main notes
-directory.
+- Preview Direction: Determines the placement of the preview window.
+    By default it toggles between `right` and `down` depending on the number of screen columns.
+```
+let g:zk_preview_direction = 'right'
+```
 
-## Caveat Emptor
+- Yank Separator: Specifies the separator used between yanked filenames.
+```
+let g:zk_yank_separator = "\n"
+```
 
--   This plugin is just a wrapper over FZF that can view directories and
-    open/create files. That's all it's ever meant to be. Anything else
-    would be put into a separate plugin.
+### Ripgrep Options
 
-## Feedback
+```vim
+let g:zk_rg_options = [
+      \ '--follow',
+      \ '--smart-case',
+      \ '--line-number',
+      \ '--color never',
+      \ ])
+```
 
-Is ***always*** welcome. If you have any ideas or issues, let me know
-and I'll try to address them. Not all will be implemented, but if they
-fit into the philosophy of this plugin or seem really useful, I'll do my
-best.
+This variable defines the default options used with Ripgrep when invoked within the context of this application.
+The options set here influence how Ripgrep searches through files.
+Here are the options set by default:
 
-## License
+- `--follow`: Instructs Ripgrep to follow symbolic links during the search.
+- `--smart-case`: Enables case-insensitive searching unless the search query contains uppercase characters, which triggers a case-sensitive search.
+- `--line-number`: Includes line numbers in the Ripgrep output, which can be useful for reference.
+- `--color never`: Disables colored output, ensuring compatibility with interfaces that do not support ANSI colors.
 
-Apache 2
+These options are stored in a Vim script list and can be customized by setting the `zk_rg_options` global variable.
+
+### FZF Options
+
+```vim
+let g:zk_fzf_options = [
+      \ '--ansi',
+      \ '--multi',
+      \ '--exact',
+      \ '--inline-info',
+      \ '--tiebreak=' . 'length,begin' ,
+      \ '--preview=' . shellescape('rg --pretty --context 3 -- {q} {1}'),
+      \ ])
+```
+
+This variable configures the default behavior of FZF, a command-line fuzzy finder, within the application.
+The settings specified here affect how results are displayed and interacted with in FZF.
+The default configuration includes:
+
+- `--ansi`: Allows ANSI color codes in the output, which is useful for colored display of results.
+- `--multi`: Enables the ability to select multiple items in the FZF interface.
+- `--exact`: Turns on exact-match mode, which restricts matches to exactly what is typed, as opposed to fuzzy matching.
+- `--inline-info`: Displays search information (such as the number of matches) inline, rather than as a separate line.
+- `--tiebreak=length,begin`: Sets the criteria for resolving items that score the same during the search. It prioritizes shorter items and those that match near the beginning.
+- `--preview`: Uses Ripgrep to generate a preview of each item.
+
+# Zettelkasten: Embracing Tags Over Folders
+
+A [Zettelkasten](https://zettelkasten.de/) consists of assorted text files, or **zettels**, which may link to each other by name.
+Traditionally, these were stored in a card file box; today, they are kept in a digital directory, often in Markdown format.
+
+Folders, whether paper-based or digital, traditionally organize files.
+However, since our computers (with tools like `(rip)grep`) search across the contents of thousands of files in milliseconds, a folder tree to organize files is no longer required:
+
+If we think of the folder as a category tag, then a folder attaches a single tag to a file;
+yet, a file often pertains to more than one category.
+Tagging, which integrates keywords directly into the text, is by any means much more practical than managing multiple folders;
+even more so since these tags usually need not be explicitly added, but already appear in the text.
+(Similar to finding a browser bookmark by its title instead of folder navigation.)
+
+Best, this method aligns with the workings of our mind, as we often recall files by remembering related words rather than a single label.
+
+# Credits
+This is a fork of [Alok Singh's notational-fzf-vim](https://github.com/alok/notational-fzf-vim) to whom all credit shall be due and whose license restrictions apply.
+If stands on the shoulders on Vim along with `ripgrep` and `fzf`.

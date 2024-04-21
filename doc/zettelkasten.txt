@@ -1,0 +1,196 @@
+*Zappykasten.txt* Zappykasten plugin documentation
+
+*Zappykasten* is a plugin for Vim that enhances note-taking capabilities using the Zettelkasten method. This document covers the installation, configuration, and usage of Zappykasten in Vim.
+
+*Requirements*~
+Zappykasten should work on Linux, Mac and Microsoft Windows, notably in Git Bash.
+Before installing Zappykasten, make sure you have Vim, ripgrep, and fzf installed on your system. These dependencies are crucial for the plugin's functionality.
+
+*Installation*~
+To install Zappykasten, you may use vim-plug:
+1. Add the following to your .vimrc:
+   Plug 'your_username/Zappykasten'
+2. Run :PlugInstall in Vim.
+Additionally, install ripgrep and fzf:
+- Ripgrep: https://github.com/BurntSushi/ripgrep
+- fzf: https://github.com/junegunn/fzf
+
+*Configuration*~
+Set up your Zettelkasten directories in your .vimrc:
+>
+let g:zk_search_paths = [$HOME . '/zettelkasten']
+let g:zk_main_directory = g:zk_search_paths[0]
+let g:zk_search_paths += [$HOME . '/diary', $HOME . '/notes', $HOME . '/Desktop']
+<
+
+*Usage*~
+- Start searching for notes with :ZK. If a note doesn't exist, it will be created.
+- Press gf to jump to a note when the cursor is on a link (to a file name or URL).
+- Insert a link to a note with Ctrl-z, using the term before the cursor.
+  The inserted path will be relative to the directory containing the currently
+  opened note (which usually is g:zk_maindir).
+
+On Microsoft Windows, all paths are assumed to be either on mounted drives or
+UNC sharepoints depending on g:zk_main_directory.
+
+--------------------------------------------------------------------------------
+KEY BINDINGS                                        *zappykasten-key_bindings*
+
+*   `<c-z>`: Insert a link to a note.
+*   `ctrl-x`: Create a new note.
+*   `ctrl-y`: Yank the selected filenames.
+*   `ctrl-s`: Split the current window.
+*   `ctrl-v`: Create a vertical split.
+*   `ctrl-t`: Open a new tab with the note.
+
+--------------------------------------------------------------------------------
+CONFIGURATION                                      *zappykasten-configuration*
+
+*   Default Extension: Specifies the default file extension for new notes.
+>
+        let g:zk_default_extension = '.md'
+<
+*   Insert Link to Note Key: Defines the key binding to insert a link to a note.
+>
+        let g:zk_insert_note_key = '<c-z>'
+<
+*   Insert Link to Note Path: can be
+    *   'relative' : insert the path relative to the directory of the current file
+    *   'absolute' : insert the absolute path of the file (with a tilde for the
+        home directory)
+    *   'name' : insert only the name of the file
+>
+            let g:zk_insert_note_path = 'name'
+<
+*   Create Note Key: Defines the key binding to create a new note.
+>
+        let g:zk_create_note_key = 'ctrl-x'
+<
+*   Yank Key: Defines the key binding to yank selected filenames.
+>
+        let g:zk_yank_key = 'ctrl-y'
+<
+*   Keymap: Custom key bindings for various note management actions.
+>
+        let g:zk_keymap = {
+        \ 'ctrl-s': 'split ',
+        \ 'ctrl-v': 'vertical split ',
+        \ 'ctrl-t': 'tabedit ',
+        \ }
+<
+*   Include Hidden Files: Includes hidden files and folders in searches.
+>
+        let g:zk_include_hidden = 0
+<
+*   Use Ignore Files: Respects ignore files (like .gitignore) in search paths.
+>
+        let g:zk_use_ignore_files = 1
+<
+*   Ignore Patterns: additional ignore patterns.
+>
+        let g:zk_ignore_pattern = ''
+<
+*   Use Short Pathnames: Truncates each path element to a single character.
+>
+        let g:zk_use_short_pathnames = 1
+<
+*   Window Width: Sets the width of the note window as a percentage of the
+    screen's width.
+    By default it toggles between 40% and 60% depending on the number of
+    screen lines.
+>
+        let g:zk_window_width = '40%'
+<
+*   Create Note Window: Controls how the new note window is created.
+>
+        let g:zk_create_note_window = 'vertical split'
+<
+*   Window Direction: Determines the placement of the note window.
+>
+        let g:zk_window_direction = 'down'
+<
+*   Window Command: Specifies the command to open the note window.
+>
+        let g:zk_window_command = 'call my_function()'
+<
+*   Show Preview: Enables a preview window during searches.
+>
+        let g:zk_show_preview = 1
+<
+*   Wrap Preview Text: Enables text wrapping in the preview window.
+>
+        let g:zk_wrap_preview_text = 1
+<
+*   Preview Width: Sets the width of the preview window as a percentage of the
+    screen's width.
+>
+        let g:zk_preview_width = 50
+<
+*   Preview Direction: Determines the placement of the preview window.
+    By default it toggles between `right` and `down` depending on the number of
+    screen columns.
+>
+        let g:zk_preview_direction = 'right'
+<
+*   Yank Separator: Specifies the separator used between yanked filenames.
+>
+        let g:zk_yank_separator = "\n"
+<
+
+RIPGREP OPTIONS                                  *zappykasten-ripgrep_options*
+>
+    let g:zk_rg_options = [
+          \ '--follow',
+          \ '--smart-case',
+          \ '--line-number',
+          \ '--color never',
+          \ ])
+<
+
+This variable defines the default options used with Ripgrep when invoked within
+the context of this application.
+The options set here influence how Ripgrep searches through files.
+Here are the options set by default:
+
+*   `--follow`: Instructs Ripgrep to follow symbolic links during the search.
+*   `--smart-case`: Enables case-insensitive searching unless the search query
+    contains uppercase characters, which triggers a case-sensitive search.
+*   `--line-number`: Includes line numbers in the Ripgrep output, which can be
+    useful for reference.
+*   `--color never`: Disables colored output, ensuring compatibility with
+    interfaces that do not support ANSI colors.
+
+These options are stored in a Vim script list and can be customized by setting
+the `zk_rg_options` global variable.
+
+FZF OPTIONS                                          *zappykasten-fzf_options*
+>
+    let g:zk_fzf_options = [
+          \ '--ansi',
+          \ '--multi',
+          \ '--exact',
+          \ '--inline-info',
+          \ '--tiebreak=' . 'length,begin' ,
+          \ '--preview=' . shellescape('rg --pretty --context 3 -- {q} {1}'),
+          \ ])
+<
+
+This variable configures the default behavior of FZF, a command-line fuzzy
+finder, within the application.
+The settings specified here affect how results are displayed and interacted
+with in FZF.
+The default configuration includes:
+
+*   `--ansi`: Allows ANSI color codes in the output, which is useful for
+    colored display of results.
+*   `--multi`: Enables the ability to select multiple items in the FZF
+    interface.
+*   `--exact`: Turns on exact-match mode, which restricts matches to exactly
+    what is typed, as opposed to fuzzy matching.
+*   `--inline-info`: Displays search information (such as the number of
+    matches) inline, rather than as a separate line.
+*   `--tiebreak=length,begin`: Sets the criteria for resolving items that score
+    the same during the search. It prioritizes shorter items and those that
+    match near the beginning.
+*   `--preview`: Uses Ripgrep to generate a preview of each item.
+

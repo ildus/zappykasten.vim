@@ -1,15 +1,13 @@
 #!/usr/bin/env pypy3
-# encoding: utf-8
 
 # Supposedly, importing so that you don't need dots in names speeds up a
 # script, and the point of this one is to run fast.
 
 import platform
 from os import pardir
-from os.path import abspath, expanduser, join, sep, split, splitdrive
+from os.path import abspath, expanduser, join, sep, split
 from pathlib import PurePath
 from sys import stdin
-
 
 # These are floated to the top so they aren't recalculated every loop.  The
 # most restrictive replacements should come earlier.
@@ -22,8 +20,7 @@ def prettyprint_path(path: str, old_path: str, replacement: str) -> str:
     # Pretty print the path prefix
     path = path.replace(old_path, replacement, 1)
     # Truncate the rest of the path to a single character.
-    short_path = join(replacement, *[x[0] for x in PurePath(path).parts[1:]])
-    return short_path
+    return join(replacement, *[x[0] for x in PurePath(path).parts[1:]])
 
 
 def shorten(path: str):
@@ -32,7 +29,11 @@ def shorten(path: str):
     # `split()` and just shorten `path`.
     path, filename = split(path)
 
-    # use empty replacement for current directory. it expands correctly
+    # replace colon by slash
+    if IS_WINDOWS and path[0].isalpha() and path[1] == ':' :
+        path = path[:1] + '\\' + path[2:]
+
+    # use empty replacement for current directory. It expands correctly
 
     for replacement, old_path in zip(REPLACEMENTS, old_paths):
         if path.startswith(old_path):
@@ -53,13 +54,6 @@ CYAN = "\033[36m"
 
 RESET = "\033[0m"
 
-# RED = '\033[31m'
-# BLUE = '\033[34m'
-# LIGHTRED = '\033[91m'
-# YELLOW = '\033[93m'
-# LIGHTBLUE = '\033[94m'
-# LIGHTCYAN = '\033[96m'
-
 
 def color(line, color):
     return color + line + RESET
@@ -68,22 +62,19 @@ def color(line, color):
 def process_line(line: str) -> str:
     # Expected format is colon separated `name:line number:contents`
 
-    if IS_WINDOWS:
+
+    if IS_WINDOWS and line[0].isalpha() and line[1] == ':' :
         # Windows paths may contain a colon, e.g. C:\Windows\ which messes up the split
-        # splitdrive(string) results in the following:
-        #   Windows drive letter, e.g. C:\Windows\Folder\Foo.txt -> ('C', '\Windows\Folder\Foo.txt')
-        #   Windows UNC path, e.g. \\Server\Share\Folder\Foo.txt -> ('\\Server\Share', '\Folder\Foo.txt')
-        #   *nix, e.g. /any/path/to/file.txt -> ('', '/any/path/to/file.txt')
-        _, line = splitdrive(line)  #  Toss the drive letter since it's not necessary.
-    filename, linenum, contents = line.split(sep=":", maxsplit=2)
+        drive, path, linenum, contents = line.split(sep=":", maxsplit=3)
+        filename = drive + ':' + path
+    else :
+        filename, linenum, contents = line.split(sep=":", maxsplit=2)
 
     # Drop trailing newline.
     contents = contents.rstrip()
 
     # Normalize path for further processing.
-    if not IS_WINDOWS:
-        # This prepends cwd in Windows which is unnecessary.
-        filename = abspath(filename)
+    filename = abspath(filename)
 
     shortened_parent, basename = shorten(filename)
     # The conditional is to avoid a leading slash if the parent is replaced
@@ -97,7 +88,7 @@ def process_line(line: str) -> str:
         colored_short_name = color(basename, CYAN)
 
     # Format is: long form, line number, short form, line number, rest of line. This is so Vim can process it.
-    formatted_line = ":".join(
+    return ":".join(
         [
             color(filename, CYAN),
             color(linenum, GREEN),
@@ -106,10 +97,6 @@ def process_line(line: str) -> str:
             contents,
         ]
     )
-    return formatted_line
-
-    # We print the long and short forms, and one form is picked in the Vim script that uses this.
-    # print(formatted_line)
 
 
 if __name__ == "__main__":

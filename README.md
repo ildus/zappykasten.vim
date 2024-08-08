@@ -19,7 +19,8 @@ To install `ripgrep` and `fzf`, either use your package manager or download a bi
 If you use [vim-plug](https://github.com/junegunn/vim-plug), then in the vim-plug block in your `.vimrc` file, add the following line between the `plug#begin` and `plug#end` calls:
 
 ```vim
-Plug 'Konfekt/zappykasten.vim'
+Plug 'junegunn/fzf.vim'
+    Plug 'Konfekt/zappykasten.vim'
 ```
 
 ## Initial Setup

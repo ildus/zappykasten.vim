@@ -9,7 +9,10 @@ Before installing Zappykasten, make sure you have Vim, ripgrep, and fzf installe
 *Installation*~
 To install Zappykasten, you may use vim-plug:
 1. Add the following to your .vimrc:
-   Plug 'your_username/Zappykasten'
+>
+    Plug 'junegunn/fzf.vim'
+    Plug 'Konfekt/zappykasten.vim'
+<
 2. Run :PlugInstall in Vim.
 Additionally, install ripgrep and fzf:
 - Ripgrep: https://github.com/BurntSushi/ripgrep

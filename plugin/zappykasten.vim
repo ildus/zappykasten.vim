@@ -283,25 +283,25 @@ endfunction
 if has('unix')
   if has('win32unix') " Git Bash provides /usr/bin/start script calling cmd.exe //c
     " use start //b "" to set void title and avoid ambiguity with passed argument
-    command! -complete=shellcmd -nargs=1 -bang Silent
+    silent! command -complete=shellcmd -nargs=1 -bang ZKSilent
           \ exe 'silent !' . (<bang>0 ? 'start "" //b' : '') . ' ' . <q-args> | execute ':redraw!'
   elseif exists('$WSL_DISTRO_NAME') " use cmd.exe to start GUI apps in WSL
-    command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent !' .
+    silent! command -complete=shellcmd -nargs=1 -bang ZKSilent execute ':silent !' .
           \ <bang>0 ? ((<q-args> =~? '\v<\f+\.(exe|com|bat|cmd)>') ?
             \ 'cmd.exe /c start "" /b ' . <q-args> :
             \ 'nohup ' . <q-args> . ' </dev/null >/dev/null 2>&1 &') :
           \ <q-args> | execute ':redraw!'
   else
-    command! -complete=shellcmd -nargs=1 -bang Silent execute ':silent !' .
+    silent! command -complete=shellcmd -nargs=1 -bang ZKSilent execute ':silent !' .
           \ (<bang>0 ? 'nohup ' . <q-args> . ' </dev/null >/dev/null 2>&1 &' : <q-args>) | execute ':redraw!'
   endif
 elseif has('win32')
-  command! -complete=shellcmd -nargs=1 -bang Silent
+  silent! command -complete=shellcmd -nargs=1 -bang ZKSilent
         \ exe 'silent !' .
         \ (&shell =~? '\<cmd\.exe\>' ? '' : 'cmd.exe /c ') .
         \ 'start ' . (<bang>0 ? '/b' : '') . ' ' . <q-args> | execute ':redraw!'
 endif
-" if exists(':Silent') == 2
+" if exists(':ZKSilent') == 2
 " Git Bash
 if has('win32unix')
     " start suffices
@@ -316,7 +316,7 @@ elseif executable('xdg-open')
 elseif executable('open')
     let s:cmd = 'open'
 endif
-command! -complete=file -nargs=1 -bang Open exe 'Silent<bang>' s:cmd shellescape(fnamemodify(trim(<q-args>),':p'), 1)
+silent! command -complete=file -nargs=1 -bang Open exe 'ZKSilent<bang>' s:cmd shellescape(fnamemodify(trim(<q-args>),':p'), 1)
 " endif
 
 function! s:gf() abort
@@ -336,7 +336,7 @@ endfunction
 " }}}
 
 " command to start fuzzy search {{{1
-command! -nargs=* -bang ZK
+silent! command -nargs=* -bang ZK
       \ call fzf#run(
           \ fzf#wrap({
               \ 'sink*': function('ZK_note_handler'),

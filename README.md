@@ -9,7 +9,7 @@ The [Zettelkasten](#Zettelkasten-Embracing-Tags-Over-Folders) note-taking method
 
 ## Requirements
 
-`Zappykasten` should work on Linux, Mac and Microsoft Windows, notably in Git Bash.
+`Zappykasten` should work on Linux, Mac and Microsoft Windows, notably in Git Bash and WSL.
 Ensure you have Vim installed along with [Ripgrep](https://github.com/BurntSushi/ripgrep) and [FZF](https://github.com/junegunn/fzf);
 these tools are necessary for the plugin to function correctly.
 To install `ripgrep` and `fzf`, either use your package manager or download a binary from their release pages [Ripgrep](https://github.com/BurntSushi/ripgrep/releases) and [FZF](https://github.com/junegunn/fzf/releases) and place it in your `$PATH`.
@@ -35,7 +35,7 @@ let g:zk_main_directory = g:zk_search_paths[0]
 ```
 
 If you come from [Alok Singh's notational-fzf-vim](https://github.com/alok/notational-fzf-vim), then it should be a matter of simply replacing all occurrences of initial `nv` in the variable names by `zk`.
-On Microsoft Windows, all paths are assumed to be either on mounted drives or UNC sharepoints depending on g:zk_main_directory.
+On Microsoft Windows, all paths are assumed to be either on mounted drives or UNC sharepoints depending on `g:zk_main_directory`.
 
 ## Instructions
 
@@ -45,6 +45,7 @@ To use `Zappykasten`:
     If a note doesn't exist, it will be created with a title derived from your search terms.
     (Use a mapping, say `nnoremap m, :<c-u>ZK<cr>` for faster access.)
 - Press `gf` to jump to a note when the cursor is on a link (to a file name or URL).
+    (To this end, two commands, `:LaunchURL` and `:LaunchApp` to open a URL or file, respectively launch an application are used and made available to the user as well.)
 - Hit `Ctrl-z` to insert a link to a note, searching for the term before the cursor, which can be refined in a fuzzy searcher.
     The inserted path will be relative to the directory containing the currently opened note (which usually is `g:zk_maindir`).
 
@@ -84,7 +85,7 @@ let g:zk_insert_note_key = '<c-z>'
 let g:zk_create_note_key = 'ctrl-x'
 ```
 
-- Yank Key: Defines the key binding to yank selected filenames.
+- Yank Key: Defines the key binding to yank selected file names.
 ```
 let g:zk_yank_key = 'ctrl-y'
 ```
@@ -113,7 +114,7 @@ let g:zk_use_ignore_files = 1
 let g:zk_ignore_pattern = ''
 ```
 
-- Use Short Pathnames: Truncates each path element to a single character.
+- Use Short Path names: Truncates each path element to a single character.
 ```
 let g:zk_use_short_pathnames = 1
 ```
@@ -160,7 +161,7 @@ let g:zk_preview_width = 50
 let g:zk_preview_direction = 'right'
 ```
 
-- Yank Separator: Specifies the separator used between yanked filenames.
+- Yank Separator: Specifies the separator used between yanked file names.
 ```
 let g:zk_yank_separator = "\n"
 ```
@@ -228,5 +229,6 @@ even more so since these tags usually need not be explicitly added, but already 
 Best, this method aligns with the workings of our mind, as we often recall files by remembering related words rather than a single label.
 
 # Credits
+
 This is a fork of [Alok Singh's notational-fzf-vim](https://github.com/alok/notational-fzf-vim) to whom all credit shall be due and whose license restrictions apply.
 If stands on the shoulders on Vim along with `ripgrep` and `fzf`.

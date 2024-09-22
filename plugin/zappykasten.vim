@@ -283,25 +283,23 @@ endfunction
 if has('unix')
   if has('win32unix') " Git Bash provides /usr/bin/start script calling cmd.exe //c
     " use start //b "" to set void title and avoid ambiguity with passed argument
-    silent! command -complete=shellcmd -nargs=1 -bang ZKSilent
-          \ exe 'silent !' . (<bang>0 ? 'start "" //b' : '') . ' ' . <q-args> | execute ':redraw!'
+    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp
+          \ exe 'silent ! start "" //b ' . <q-args> | redraw!
   elseif exists('$WSL_DISTRO_NAME') " use cmd.exe to start GUI apps in WSL
-    silent! command -complete=shellcmd -nargs=1 -bang ZKSilent execute ':silent !' .
-          \ <bang>0 ? ((<q-args> =~? '\v<\f+\.(exe|com|bat|cmd)>') ?
+    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp execute ':silent !'..
+          \ ((<q-args> =~? '\v<\f+\.(exe|com|bat|cmd)>') ?
             \ 'cmd.exe /c start "" /b ' . <q-args> :
-            \ 'nohup ' . <q-args> . ' </dev/null >/dev/null 2>&1 &') :
-          \ <q-args> | execute ':redraw!'
+            \ 'nohup ' . <q-args> . ' </dev/null >/dev/null 2>&1 &')
+          \ | redraw!
   else
-    silent! command -complete=shellcmd -nargs=1 -bang ZKSilent execute ':silent !' .
-          \ (<bang>0 ? 'nohup ' . <q-args> . ' </dev/null >/dev/null 2>&1 &' : <q-args>) | execute ':redraw!'
+    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp execute ':silent ! nohup' <q-args> '</dev/null >/dev/null 2>&1 &' | redraw!
   endif
 elseif has('win32')
-  silent! command -complete=shellcmd -nargs=1 -bang ZKSilent
-        \ exe 'silent !' .
-        \ (&shell =~? '\<cmd\.exe\>' ? '' : 'cmd.exe /c ') .
-        \ 'start ' . (<bang>0 ? '/b' : '') . ' ' . <q-args> | execute ':redraw!'
+  silent! command -complete=shellcmd -nargs=1 -bang LaunchApp
+        \ exe 'silent !'.. (&shell =~? '\<cmd\.exe\>' ? '' : 'cmd.exe /c')
+        \ 'start /b ' <q-args> | redraw!
 endif
-" if exists(':ZKSilent') == 2
+" if exists(':LaunchApp') == 2
 " Git Bash
 if has('win32unix')
     " start suffices
@@ -316,7 +314,7 @@ elseif executable('xdg-open')
 elseif executable('open')
     let s:cmd = 'open'
 endif
-silent! command -complete=file -nargs=1 -bang Open exe 'ZKSilent<bang>' s:cmd shellescape(fnamemodify(trim(<q-args>),':p'), 1)
+silent! command -complete=file -nargs=1 LaunchURL exe 'LaunchApp' s:cmd shellescape(fnamemodify(trim(<q-args>),':p'), 1)
 " endif
 
 function! s:gf() abort
@@ -328,7 +326,7 @@ function! s:gf() abort
         call search('(', 'ce')
     endif
     if !empty(URL)
-        exe 'Open!' escape(URL, '%#')
+        exe 'LaunchURL' escape(URL, '%#')
     else
         normal! gf
     endif

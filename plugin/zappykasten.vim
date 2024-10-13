@@ -284,20 +284,20 @@ if has('unix')
   if has('win32unix') " Git Bash provides /usr/bin/start script calling cmd.exe //c
     " use start //b "" to set void title and avoid ambiguity with passed argument
     silent! command -complete=shellcmd -nargs=1 -bang LaunchApp
-          \ exe 'silent ! start "" //b ' . <q-args> | redraw!
+          \ exe 'silent ! start "" //b ' . trim(<q-args>) | redraw!
   elseif exists('$WSL_DISTRO_NAME') " use cmd.exe to start GUI apps in WSL
     silent! command -complete=shellcmd -nargs=1 -bang LaunchApp execute ':silent !'..
           \ ((<q-args> =~? '\v<\f+\.(exe|com|bat|cmd)>') ?
-            \ 'cmd.exe /c start "" /b ' . <q-args> :
-            \ 'nohup ' . <q-args> . ' </dev/null >/dev/null 2>&1 &')
+            \ 'cmd.exe /c start "" /b ' . trim(<q-args>) :
+            \ 'nohup ' . trim(<q-args>) . ' </dev/null >/dev/null 2>&1 &')
           \ | redraw!
   else
-    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp execute ':silent ! nohup' <q-args> '</dev/null >/dev/null 2>&1 &' | redraw!
+    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp execute ':silent ! nohup' trim(<q-args>) '</dev/null >/dev/null 2>&1 &' | redraw!
   endif
 elseif has('win32')
   silent! command -complete=shellcmd -nargs=1 -bang LaunchApp
         \ exe 'silent !'.. (&shell =~? '\<cmd\.exe\>' ? '' : 'cmd.exe /c')
-        \ 'start /b ' <q-args> | redraw!
+        \ 'start /b ' trim(<q-args>) | redraw!
 endif
 " if exists(':LaunchApp') == 2
 " Git Bash
@@ -314,7 +314,7 @@ elseif executable('xdg-open')
 elseif executable('open')
     let s:cmd = 'open'
 endif
-silent! command -complete=file -nargs=1 LaunchURL exe 'LaunchApp' s:cmd shellescape(fnamemodify(trim(<q-args>),':p'), 1)
+silent! command -complete=file -nargs=1 LaunchURL exe 'LaunchApp' s:cmd <q-args>
 " endif
 
 function! s:gf() abort
@@ -355,6 +355,22 @@ silent! command -nargs=* -bang ZK
                     \ ..' '..s:fzf_preview_options..':'..get(g:, 'zk_preview_direction', &columns > 100 ? 'right' : 'down')
                     \ ..' '..'--bind=?:"change-preview-window('.. (&columns > 100 ? 'down' : 'right') ..',border-top|hidden|)"',
               \ }, <bang>0))
+
+" Let's break down the even more cryptic --preview-window expression
+"
+"     --preview-window '~4,+{2}+4/3,<80(up)'
+"
+" - ~4 makes the top four lines "sticky" header so that they are always
+"   visible regardless of the scroll offset. (Did I mention that you can
+"   scroll the preview window with your mouse/trackpad?)
+" - +{2} - The base offset is extracted from the second token
+" - +4 - We add 4 lines to the base offset to compensate for the header
+" - /3 adjusts the offset so that the matching line is shown at a third
+"   position in the window
+" - <80(up) - This expression specifies the alternative options for the
+"   preview window. By default, the preview window opens on the right side
+"   with 50% width. But if the width is narrower than 80 columns, it will open
+"   above the main window with 50% height.
 " }}}
 
 " function for creating notes {{{1

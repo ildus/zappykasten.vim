@@ -279,54 +279,16 @@ endfunction
 " unlet s:opt
 " unlet s:glob
 
-" surpress output of command; use bang for GUI applications
-if has('unix')
-  if has('win32unix') " Git Bash provides /usr/bin/start script calling cmd.exe //c
-    " use start //b "" to set void title and avoid ambiguity with passed argument
-    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp
-          \ exe 'silent ! start "" //b ' . trim(<q-args>) | redraw!
-  elseif exists('$WSL_DISTRO_NAME') " use cmd.exe to start GUI apps in WSL
-    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp execute ':silent !'..
-          \ ((<q-args> =~? '\v<\f+\.(exe|com|bat|cmd)>') ?
-            \ 'cmd.exe /c start "" /b ' . trim(<q-args>) :
-            \ 'nohup ' . trim(<q-args>) . ' </dev/null >/dev/null 2>&1 &')
-          \ | redraw!
-  else
-    silent! command -complete=shellcmd -nargs=1 -bang LaunchApp execute ':silent ! nohup' trim(<q-args>) '</dev/null >/dev/null 2>&1 &' | redraw!
-  endif
-elseif has('win32')
-  silent! command -complete=shellcmd -nargs=1 -bang LaunchApp
-        \ exe 'silent !'.. (&shell =~? '\<cmd\.exe\>' ? '' : 'cmd.exe /c')
-        \ 'start /b ' trim(<q-args>) | redraw!
-endif
-" if exists(':LaunchApp') == 2
-" Git Bash
-if has('win32unix')
-    " start suffices
-    let s:cmd = ''
-" Windows / WSL
-elseif executable('explorer.exe')
-    let s:cmd = 'explorer.exe'
-" Linux / BSD
-elseif executable('xdg-open')
-    let s:cmd = 'xdg-open'
-" MacOS
-elseif executable('open')
-    let s:cmd = 'open'
-endif
-silent! command -complete=file -nargs=1 LaunchURL exe 'LaunchApp' s:cmd <q-args>
-" endif
-
 function! s:gf() abort
     " Adapted from https://raw.githubusercontent.com/dharmx/nvim/main/plugin/gx.vim
     let URL = ''
     if searchpair('\[.\{-}\](', '', ')\zs', 'cbW', '', line('.')) > 0
-        let base = '\%(\%(http\|ftp\|irc\)s\?\|file\)://\S\{-}'
+        let base = '\%(https\?\|file\)://\S\{-}'
         let URL = matchstr(getline('.')[col('.')-1:], '\[.\{-}\](\zs'..base..'\ze\(\s\+.\{-}\)\?)')
         call search('(', 'ce')
     endif
     if !empty(URL)
-        exe 'LaunchURL' escape(URL, '%#')
+        exe 'Open' escape(URL, '%#')
     else
         normal! gf
     endif

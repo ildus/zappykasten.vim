@@ -1,6 +1,6 @@
-" if v:version > 901 || (v:version == 901 && has('patch-9.1.0818')) || has('nvim-0.10.3')
-"   finish
-" endif
+if v:version > 901 || (v:version == 901 && has('patch-9.1.0818')) || has('nvim-0.10.3')
+  finish
+endif
 
 if exists(':Launch') != 2
 if &srr =~# "%s"

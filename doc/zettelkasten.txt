@@ -4,19 +4,20 @@
 
 *Requirements*~
 Zappykasten should work on Linux, Mac and Microsoft Windows, notably in Git Bash.
-Before installing Zappykasten, make sure you have Vim, ripgrep, and fzf installed on your system. These dependencies are crucial for the plugin's functionality.
+Before installing Zappykasten, make sure you have Vim, ripgrep, and fzf.vim
+installed on your system.
 
 *Installation*~
 To install Zappykasten, you may use vim-plug:
+
 1. Add the following to your .vimrc:
 >
+Plug 'https://github.com/junegunn/fzf', { 'dir': $HOME . '/bin/apps/fzf' }
     Plug 'junegunn/fzf.vim'
-    Plug 'Konfekt/zappykasten.vim'
+        Plug 'Konfekt/zappykasten.vim'
 <
 2. Run :PlugInstall in Vim.
-Additionally, install ripgrep and fzf:
-- Ripgrep: https://github.com/BurntSushi/ripgrep
-- fzf: https://github.com/junegunn/fzf
+Additionally, install Ripgrep: https://github.com/BurntSushi/ripgrep
 
 *Configuration*~
 Set up your Zettelkasten directories in your .vimrc:

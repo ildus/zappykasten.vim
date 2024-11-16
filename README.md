@@ -10,17 +10,18 @@ The [Zettelkasten](#Zettelkasten-Embracing-Tags-Over-Folders) note-taking method
 ## Requirements
 
 `Zappykasten` should work on Linux, Mac and Microsoft Windows, notably in Git Bash and WSL.
-Ensure you have Vim installed along with [Ripgrep](https://github.com/BurntSushi/ripgrep) and [FZF](https://github.com/junegunn/fzf);
+Ensure you have Vim installed along with [Ripgrep](https://github.com/BurntSushi/ripgrep) and [FZF(.vim)](https://github.com/junegunn/fzf.vim);
 these tools are necessary for the plugin to function correctly.
-To install `ripgrep` and `fzf`, either use your package manager or download a binary from their release pages [Ripgrep](https://github.com/BurntSushi/ripgrep/releases) and [FZF](https://github.com/junegunn/fzf/releases) and place it in your `$PATH`.
+To install `ripgrep`, either use your package manager or download a binary from his release page [Ripgrep](https://github.com/BurntSushi/ripgrep/releases) and place it in your `$PATH`.
 
 ## Installation
 
 If you use [vim-plug](https://github.com/junegunn/vim-plug), then in the vim-plug block in your `.vimrc` file, add the following line between the `plug#begin` and `plug#end` calls:
 
 ```vim
-Plug 'junegunn/fzf.vim'
-    Plug 'Konfekt/zappykasten.vim'
+Plug 'https://github.com/junegunn/fzf', { 'dir': $HOME . '/bin/apps/fzf' }
+    Plug 'junegunn/fzf.vim'
+        Plug 'Konfekt/zappykasten.vim'
 ```
 
 ## Initial Setup

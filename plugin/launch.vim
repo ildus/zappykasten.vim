@@ -1,11 +1,8 @@
-if v:version > 901 || (v:version == 901 && has('patch-9.1.0818'))
-  finish
-endif
+" if v:version > 901 || (v:version == 901 && has('patch-9.1.0818')) || has('nvim-0.10.3')
+"   finish
+" endif
 
-if exists(':Launch') == 2
-  finish
-endif
-
+if exists(':Launch') != 2
 if &srr =~# "%s"
   let s:redir = printf(&srr, has("win32") ? "nul" : "/dev/null")
 else
@@ -35,7 +32,7 @@ if has('unix')
   elseif exists('$WSL_DISTRO_NAME') " use cmd.exe to start GUI apps in WSL
     command -complete=shellcmd -nargs=1 -bang Launch execute ':silent !'..
           \ ((<q-args> =~? '\v<\f+\.(exe|com|bat|cmd)>') ?
-            \ 'cmd.exe /c start "" /b' trim(<q-args>) :
+            \ 'cmd.exe /c start /b' trim(<q-args>) :
             \ 'nohup ' trim(<q-args>) s:redir '&')
           \ | redraw!
   else
@@ -46,6 +43,7 @@ elseif has('win32')
   command -complete=shellcmd -nargs=1 -bang Launch
         \ exe 'silent !'.. (&shell =~? '\<cmd\.exe\>' ? '' : 'cmd.exe /c')
         \ 'start /b ' trim(<q-args>) s:redir | redraw!
+endif
 endif
 if exists(':Launch') == 2 && exists(':Open') != 2
   " Git Bash

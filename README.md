@@ -46,7 +46,6 @@ To use `Zappykasten`:
     If a note doesn't exist, it will be created with a title derived from your search terms.
     (Use a mapping, say `nnoremap m, :<c-u>ZK<cr>` for faster access.)
 - Press `gf` to jump to a note when the cursor is on a link (to a file name or URL).
-    (To this end, two commands, `:LaunchURL` and `:LaunchApp` to open a URL or file, respectively launch an application are used and made available to the user as well.)
 - Hit `Ctrl-z` to insert a link to a note, searching for the term before the cursor, which can be refined in a fuzzy searcher.
     The inserted path will be relative to the directory containing the currently opened note (which usually is `g:zk_maindir`).
 

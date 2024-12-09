@@ -19,7 +19,7 @@ To install `ripgrep`, either use your package manager or download a binary from 
 If you use [vim-plug](https://github.com/junegunn/vim-plug), then in the vim-plug block in your `.vimrc` file, add the following line between the `plug#begin` and `plug#end` calls:
 
 ```vim
-Plug 'https://github.com/junegunn/fzf', { 'dir': $HOME . '/bin/apps/fzf' }
+Plug 'https://github.com/junegunn/fzf', { 'dir': $HOME..'/bin/apps/fzf' }
     Plug 'junegunn/fzf.vim'
         Plug 'Konfekt/zappykasten.vim'
 ```
@@ -29,10 +29,10 @@ Plug 'https://github.com/junegunn/fzf', { 'dir': $HOME . '/bin/apps/fzf' }
 Set the directories in which to search for notes and a *main* directory, in which to store new notes (which both default to `~/zettelkasten`):
 
 ```vim
-let g:zk_search_paths = [$HOME . '/zettelkasten']
+let g:zk_search_paths = [$HOME..'/zettelkasten']
 let g:zk_main_directory = g:zk_search_paths[0]
-" let g:zk_search_paths += [$HOME . '/diary']
-" let g:zk_search_paths += [$HOME . '/Desktop']
+" let g:zk_search_paths += [$HOME..'/diary']
+" let g:zk_search_paths += [$HOME..'/Desktop']
 ```
 
 If you come from [Alok Singh's notational-fzf-vim](https://github.com/alok/notational-fzf-vim), then it should be a matter of simply replacing all occurrences of initial `nv` in the variable names by `zk`.
@@ -196,8 +196,8 @@ let g:zk_fzf_options = [
       \ '--multi',
       \ '--exact',
       \ '--inline-info',
-      \ '--tiebreak=' . 'length,begin' ,
-      \ '--preview=' . shellescape('rg --pretty --context 3 -- {q} {1}'),
+      \ '--tiebreak='..'length,begin' ,
+      \ '--preview='..shellescape('rg --pretty --context 3 -- {q} {1}'),
       \ ])
 ```
 

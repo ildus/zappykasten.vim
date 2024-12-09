@@ -1,4 +1,4 @@
-if v:version > 901 || (v:version == 901 && has('patch-9.1.0818')) || has('nvim-0.10.3')
+if v:version > 901 || (v:version == 901 && has('patch-9.1.0818')) || has('nvim-0.11.0')
   finish
 endif
 

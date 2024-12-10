@@ -23,7 +23,7 @@ if has('unix')
       " Adding "" //b` sets void title, hides cmd window and blocks path conversion
       " of /b to \b\ " by MSYS2; see https://www.msys2.org/docs/filesystem-paths/
       command -complete=shellcmd -nargs=1 -bang Launch
-            \ exe 'silent !start "" //b' trim(<q-args>)  s:redir | redraw!
+            \ exe 'silent !start //b' trim(<q-args>)  s:redir | redraw!
     else
       " imitate /usr/bin/start script for other environments and hope for the best
       command -complete=shellcmd -nargs=1 -bang Launch
@@ -37,12 +37,12 @@ if has('unix')
           \ | redraw!
   else
     command -complete=shellcmd -nargs=1 -bang Launch
-        \ exe ':silent ! nohup' trim(<q-args>) s:redir '&' | redraw!
+        \ exe ':silent ! nohup' trim(<q-args>) s:redir (has('gui_running') ? '' : '&') | redraw!
   endif
 elseif has('win32')
   command -complete=shellcmd -nargs=1 -bang Launch
         \ exe 'silent !'.. (&shell =~? '\<cmd\.exe\>' ? '' : 'cmd.exe /c')
-        \ 'start /b ' trim(<q-args>) s:redir | redraw!
+        \ 'start "" /b ' trim(<q-args>) s:redir | redraw!
 endif
 endif
 if exists(':Launch') == 2 && exists(':Open') != 2

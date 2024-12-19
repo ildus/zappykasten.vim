@@ -46,17 +46,16 @@ To use `Zappykasten`:
     If a note doesn't exist, it will be created with a title derived from your search terms.
     (Use a mapping, say `nnoremap m, :<c-u>ZK<cr>` for faster access.)
 - Press `gf` to jump to a note when the cursor is on a link (to a file name or URL).
-- Hit `Ctrl-z` to insert a link to a note, searching for the term before the cursor, which can be refined in a fuzzy searcher.
-    The inserted path will be relative to the directory containing the currently opened note (which usually is `g:zk_maindir`).
+- Hit `<C-Z>` to insert a link to a note (Zettel), searching for the term before the cursor, which can be refined in a fuzzy searcher.
+    The inserted path will be (by default, see `g:zk_insert_note_path`) relative to the directory containing the currently opened note (which usually is `g:zk_maindir`).
 
-## Key Bindings
+## Key Bindings in Fuzzy Search Window
 
-- `<c-z>`: Insert a link to a note.
-- `ctrl-x`: Create a new note.
-- `ctrl-y`: Yank the selected filenames.
-- `ctrl-s`: Split the current window.
-- `ctrl-v`: Create a vertical split.
-- `ctrl-t`: Open a new tab with the note.
+- `Ctrl-X`: Create a new note.
+- `Ctrl-Y`: Yank the selected filenames.
+- `Ctrl-S`: Split the current window.
+- `Ctrl-V`: Create a vertical split.
+- `Ctrl-T`: Open a new tab with the note.
 
 ## Configuration
 

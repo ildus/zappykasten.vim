@@ -30,22 +30,22 @@ let g:zk_search_paths += [$HOME . '/diary', $HOME . '/notes', $HOME . '/Desktop'
 *Usage*~
 - Start searching for notes with :ZK. If a note doesn't exist, it will be created.
 - Press gf to jump to a note when the cursor is on a link (to a file name or URL).
-- Insert a link to a note with Ctrl-z, using the term before the cursor.
-  The inserted path will be relative to the directory containing the currently
-  opened note (which usually is g:zk_maindir).
+- Insert a link to a note (Zettel) with <C-Z>, using the term before the cursor.
+  The inserted path will be (by default, see `g:zk_insert_note_path`) relative
+  to the directory containing the currently opened note (which usually is
+  `g:zk_maindir`).
 
 On Microsoft Windows, all paths are assumed to be either on mounted drives or
 UNC sharepoints depending on g:zk_main_directory.
 
 --------------------------------------------------------------------------------
-KEY BINDINGS                                        *zappykasten-key_bindings*
+KEY BINDINGS in Fuzzy Search Window                *zappykasten-key_bindings*
 
-*   `<c-z>`: Insert a link to a note.
-*   `ctrl-x`: Create a new note.
-*   `ctrl-y`: Yank the selected filenames.
-*   `ctrl-s`: Split the current window.
-*   `ctrl-v`: Create a vertical split.
-*   `ctrl-t`: Open a new tab with the note.
+*   `Ctrl-X`: Create a new note.
+*   `Ctrl-Y`: Yank the selected filenames.
+*   `Ctrl-S`: Split the current window.
+*   `Ctrl-V`: Create a vertical split.
+*   `Ctrl-T`: Open a new tab with the note.
 
 --------------------------------------------------------------------------------
 CONFIGURATION                                      *zappykasten-configuration*

@@ -2,10 +2,10 @@ The [Zettelkasten](#Zettelkasten-Embracing-Tags-Over-Folders) note-taking method
 
 `Zappykasten` is a Vim plug-in that lets you
 
-- instantly crawl (various) folders (thanks to [fzf](https://github.com/junegunn/fzf) and [ripgrep](https://github.com/BurntSushi/ripgrep))
-- automatically create a note with the designated search terms if it is yet absent,
-- insert a link to a note through content searches, and
-- open linked notes by placing the cursor near the link
+- crawl note folders (thanks to [fzf](https://github.com/junegunn/fzf) and [ripgrep](https://github.com/BurntSushi/ripgrep))
+- create a note with the designated search terms if it is yet absent,
+- insert a link to a note through content searches, and jump to/preview linked notes
+- insert and complete tags, and search for them
 
 ## Requirements
 
@@ -42,14 +42,22 @@ On Microsoft Windows, all paths are assumed to be either on mounted drives or UN
 
 To use `Zappykasten`:
 
-- Type `:ZK` to search for notes by content.
+- In Normal mode, type `:ZK` to search for notes by content.
     If a note doesn't exist, it will be created with a title derived from your search terms.
     (Use a mapping, say `nnoremap m, :<c-u>ZK<cr>` for faster access.)
-- Press `gf` to jump to a note when the cursor is on a link (to a file name or URL).
-- Hit `<C-Z>` to insert a link to a note (Zettel), searching for the term before the cursor, which can be refined in a fuzzy searcher.
-    The inserted path will be (by default, see `g:zk_insert_note_path`) relative to the directory containing the currently opened note (which usually is `g:zk_maindir`).
+- In Normal mode, press
+    - `gf`/`K`  to jump/preview the linked note under the cursor,
+    - `[<C-D>` to jump to the linked tag under the cursor,
+    - `[D/I` to list all occurrences of the (tagged) keyword under the cursor (see `:help include-search`).
+- In insert mode:
+    - press `<C-X><C-I>` to complete words from other notes.
+    - press `<C-Z>` to insert a link to a note (Zettel), searching for the term before the cursor, which can be refined in a fuzzy searcher.
+        (The inserted path will be, by default but see `g:zk_insert_note_path`, relative to the directory containing the currently opened note, usually `g:zk_maindir`.)
+    - to insert a tag, such as `Zettel`, surround it with double brackets (such as in `[[Zettel]]`).
 
 ## Key Bindings in Fuzzy Search Window
+
+Once invoked the Fuzzy Search Window by `:ZK`, you can hit
 
 - `Ctrl-X`: Create a new note.
 - `Ctrl-Y`: Yank the selected filenames.
@@ -62,6 +70,11 @@ To use `Zappykasten`:
 - Default Extension: Specifies the default file extension for new notes.
 ```
 let g:zk_default_extension = '.md'
+```
+
+- Tag Marker: Specifies the markers for tags; defaults to surrounding double brackets `[[...]]`
+```
+let g:zk_tag_marker  = '\[\[\ze\i\+\]\]'
 ```
 
 - Insert Link to Note Key: Defines the key binding to insert a link to a note.

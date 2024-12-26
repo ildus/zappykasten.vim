@@ -28,12 +28,24 @@ let g:zk_search_paths += [$HOME . '/diary', $HOME . '/notes', $HOME . '/Desktop'
 <
 
 *Usage*~
-- Start searching for notes with :ZK. If a note doesn't exist, it will be created.
-- Press gf to jump to a note when the cursor is on a link (to a file name or URL).
-- Insert a link to a note (Zettel) with <C-Z>, using the term before the cursor.
-  The inserted path will be (by default, see `g:zk_insert_note_path`) relative
-  to the directory containing the currently opened note (which usually is
-  `g:zk_maindir`).
+- Start searching for notes with :ZK. If a note doesn't exist, it will be
+  created.
+- In Normal mode, type :ZK to search for notes by content. If a note doesn't
+  exist, it will be created with a title derived from your search terms. (Use a
+  mapping, say nnoremap m, :<c-u>ZK<cr> for faster access.)
+- In Normal mode, press
+  - gf/K  to jump/preview the linked note under the cursor,
+  - [<C-D> to jump to the linked tag under the cursor,
+  - [D/I to list all occurrences of the (tagged) keyword under the cursor (see
+    |include-search|).
+- In insert mode:
+  - press <C-X><C-I> to complete words from other notes
+  - press <C-Z> to insert a link to a note (Zettel), searching for the term
+    before the cursor, which can be refined in a fuzzy searcher. (The
+    inserted path will be, by default but see g:zk_insert_note_path, relative to
+    the directory containing the currently opened note, usually g:zk_maindir.)
+  - to insert a tag, such as Zettel, surround it with double brackets (such
+    as in [[Zettel]]).
 
 On Microsoft Windows, all paths are assumed to be either on mounted drives or
 UNC sharepoints depending on g:zk_main_directory.
@@ -53,6 +65,10 @@ CONFIGURATION                                      *zappykasten-configuration*
 *   Default Extension: Specifies the default file extension for new notes.
 >
         let g:zk_default_extension = '.md'
+<
+*   Tag Marker: Specifies the markers for tags.
+>
+        let g:zk_tag_marker  = '\[\[\ze\i\+\]\]'
 <
 *   Insert Link to Note Key: Defines the key binding to insert a link to a note.
 >

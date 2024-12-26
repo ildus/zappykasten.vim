@@ -14,6 +14,7 @@ if exists(':FZF') != 2
 endif
 
 let s:ext = get(g:, 'zk_default_extension', '.md')
+let s:tag = get(g:, 'zk_tag_marker', '\[\[\ze\i\+\]\]')
 
 " Set up user-defined search paths or default if not defined
 if !exists('g:zk_search_paths')
@@ -253,30 +254,36 @@ endfunction
 " add settings and mappings to make gf jump to URL or file {{{1
 " Configure paths for 'gf' command
 let s:glob = ''
-let s:opt = ''
+let s:path = ''
 for path in g:zk_search_paths
-    let path = resolve(path)
+    let path = resolve(expand(path))
     if exists('+shellslash') && !&shellslash
         let path = tr(path, "\\", "/")
     endif
     let s:glob .= path . '/*' . s:ext . ','
-    let s:opt .= path . '/**,'
+    let s:path .= path . '/*,'
 endfor
 
 augroup zappykasten
   autocmd!
-  exe 'autocmd BufRead,BufNewFile ' . s:glob . ' call s:zappykasten()'
-  autocmd FileType markdown let &l:suffixesadd =
-              \ empty(&l:suffixesadd) ? s:ext : &l:suffixesadd..',.'..s:ext
+  exe 'autocmd BufRead,BufNewFile' s:glob 'call s:zappykasten()'
 augroup END
 
 function! s:zappykasten() abort
-    let &l:path .= s:opt
+    let &l:path .= (empty(&l:path) ? s:path : ','..s:path)..',.'
+    let &l:suffixesadd =
+                \ empty(&l:suffixesadd) ? s:ext : &l:suffixesadd..',.'..s:ext
+    let &l:include = '\[.\{-}\](\zs\f\+\ze\%('..escape(s:ext,'.')..'\)\?)'
+    let &l:includeexpr = 'v:fname =~# "\\V'..escape(s:ext,'\')..'\\$" ? v:fname : v:fname.."'..s:ext..'"'
+    let &l:define = s:tag
+    command! -buffer -nargs=1 -complete=file Pedit exe 'pedit'
+                \ (<q-args> =~# '\V'..escape(s:ext,'\')..'\$' ? <q-args> : <q-args>..s:ext)
+    let &l:keywordprg = ':Pedit'
     nnoremap <buffer> gf :<c-u>call <sid>gf()<cr>
     exe 'inoremap <buffer><expr> ' . s:insert_note_key . ' <sid>complete_file()'
 endfunction
 
-" unlet s:opt
+" unlet s:path
 " unlet s:glob
 
 function! s:gf() abort

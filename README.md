@@ -51,8 +51,7 @@ To use `Zappykasten`:
     - `[D/I` to list all occurrences of the (tagged) keyword under the cursor (see `:help include-search`).
 - In insert mode:
     - press `<C-X><C-I>` to complete words from other notes.
-    - press `<C-Z>` to insert a link to a note (Zettel), searching for the term before the cursor, which can be refined in a fuzzy searcher.
-        (The inserted path will be, by default but see `g:zk_insert_note_path`, relative to the directory containing the currently opened note, usually `g:zk_maindir`.)
+    - press `<C-X><C-Z>` to insert a link to a note (Zettel), searching for the term before the cursor, which can be refined in a fuzzy searcher.
     - to insert a tag, such as `Zettel`, surround it with double brackets (such as in `[[Zettel]]`).
 
 ## Key Bindings in Fuzzy Search Window
@@ -79,7 +78,7 @@ let g:zk_tag_marker  = '\[\[\ze\i\+\]\]'
 
 - Insert Link to Note Key: Defines the key binding to insert a link to a note.
 ```
-let g:zk_insert_note_key = '<c-z>'
+let g:zk_insert_note_key = '<c-x><c-z>'
 ```
 
 - Insert Link to Note Path: can be

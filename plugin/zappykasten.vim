@@ -176,7 +176,7 @@ let s:fzf_preview_options = '--preview-window=' . s:fzf_preview_window_options
 let s:yank_separator = get(g:, 'zk_yank_separator', "\n")
 
 " Key mapping for inserting note links
-let s:insert_note_key = get(g:, 'zk_insert_note_key', '<c-z>')
+let s:insert_note_key = get(g:, 'zk_insert_note_key', '<c-x><c-z>')
 let s:insert_note_path = get(g:, 'zk_insert_note_path', 'name')
 
 " Function to yank data to register

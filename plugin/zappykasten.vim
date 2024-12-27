@@ -276,8 +276,9 @@ function! s:zappykasten() abort
     let &l:include = '\[.\{-}\](\zs\f\+\ze\%('..escape(s:ext,'.')..'\)\?)'
     let &l:includeexpr = 'v:fname =~# "\\V'..escape(s:ext,'\')..'\\$" ? v:fname : v:fname.."'..s:ext..'"'
     let &l:define = s:tag
-    command! -buffer -nargs=1 -complete=file Pedit exe 'pedit'
-                \ (<q-args> =~# '\V'..escape(s:ext,'\')..'\$' ? <q-args> : <q-args>..s:ext)
+    command! -buffer -nargs=1 -complete=file Pedit
+                \  exe 'pedit' (<q-args> =~# '\V'..escape(s:ext,'\')..'\$' ? <q-args> : <q-args>..s:ext)
+                \ | autocmd CursorMoved <buffer> ++once wincmd z
     let &l:keywordprg = ':Pedit'
     nnoremap <buffer> gf :<c-u>call <sid>gf()<cr>
     exe 'inoremap <buffer><expr> ' . s:insert_note_key . ' <sid>complete_file()'

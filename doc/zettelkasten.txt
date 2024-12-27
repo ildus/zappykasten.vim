@@ -34,12 +34,11 @@ let g:zk_search_paths += [$HOME . '/diary', $HOME . '/notes', $HOME . '/Desktop'
   exist, it will be created with a title derived from your search terms. (Use a
   mapping, say nnoremap m, :<c-u>ZK<cr> for faster access.)
 - In Normal mode, press
-  - gf/K  to jump/preview the linked note under the cursor,
-  - [<C-D> to jump to the linked tag under the cursor,
-  - [D/I to list all occurrences of the (tagged) keyword under the cursor (see
-    |include-search|).
+  - gf/K  to open/preview the linked note under the cursor,
+  - [<Tab>/[<C-D> to jump to the (tagged) keyword under the cursor, respectively
+  - [I/[D to list all its occurrences (see |include-search|).
 - In insert mode:
-  - press <C-X><C-I> to complete words from other notes
+  - press <C-X><C-I> to complete words from linked notes
   - press <C-X><C-Z> to insert a link to a note (Zettel), searching for the term
     before the cursor, which can be refined in a fuzzy searcher. (The
     inserted path will be by default, though see g:zk_insert_note_path, relative

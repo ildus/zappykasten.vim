@@ -46,23 +46,24 @@ To use `Zappykasten`:
     If a note doesn't exist, it will be created with a title derived from your search terms.
     (Use a mapping, say `nnoremap m, :<c-u>ZK<cr>` for faster access.)
 - In Normal mode, press
-    - `gf`/`K`  to jump/preview the linked note under the cursor,
-    - `[<C-D>` to jump to the linked tag under the cursor,
-    - `[D/I` to list all occurrences of the (tagged) keyword under the cursor (see `:help include-search`).
+    - `gf`/`K`  to open/preview the linked note under the cursor,
+    - `[<Tab>`/`[<C-D>` to jump to the (tagged) word under the cursor, respectively
+    - `[I`/`[D` to list all its occurrences (see `:help include-search`).
 - In insert mode:
-    - press `<C-X><C-I>` to complete words from other notes.
+    - press `<C-X><C-I>` to complete words from linked notes.
     - press `<C-X><C-Z>` to insert a link to a note (Zettel), searching for the term before the cursor, which can be refined in a fuzzy searcher.
+        (The inserted path will be by default, though see `g:zk_insert_note_path`, relative to the directory containing the currently open note, usually `g:zk_maindir`.)
     - to insert a tag, such as `Zettel`, surround it with double brackets (such as in `[[Zettel]]`).
 
 ## Key Bindings in Fuzzy Search Window
 
-Once invoked the Fuzzy Search Window by `:ZK`, you can hit
+Inside the Fuzzy Search Window opened by `:ZK`, hit
 
-- `Ctrl-X`: Create a new note.
-- `Ctrl-Y`: Yank the selected filenames.
-- `Ctrl-S`: Split the current window.
-- `Ctrl-V`: Create a vertical split.
-- `Ctrl-T`: Open a new tab with the note.
+- `Ctrl-X` to create a new note,
+- `Ctrl-Y` to yank the selected filenames,
+- `Ctrl-S` to open the note in a horizontal split,
+- `Ctrl-V` to open the note in a vertical split, or
+- `Ctrl-T` to open the note in a a new tab.
 
 ## Configuration
 

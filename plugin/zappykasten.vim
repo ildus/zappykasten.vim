@@ -270,7 +270,7 @@ augroup zappykasten
 augroup END
 
 function! s:zappykasten() abort
-    let &l:path .= (empty(&l:path) ? s:path : ','..s:path)..',.'
+    let &l:path = (empty(&path) ? '' : &path..',')..s:path
     let &l:suffixesadd =
                 \ empty(&l:suffixesadd) ? s:ext : &l:suffixesadd..',.'..s:ext
     let &l:include = '\[.\{-}\](\zs\f\+\ze\%('..escape(s:ext,'.')..'\)\?)'

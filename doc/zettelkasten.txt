@@ -4,20 +4,19 @@
 
 *Requirements*~
 Zappykasten should work on Linux, Mac and Microsoft Windows, notably in Git Bash.
-Before installing Zappykasten, make sure you have Vim, ripgrep, and fzf.vim
-installed on your system.
+Before installing Zappykasten, make sure ripgrep and fzf(.vim) is installed.
 
 *Installation*~
-To install Zappykasten, you may use vim-plug:
+To install Zappykasten using vim-plug:
 
 1. Add the following to your .vimrc:
 >
-Plug 'https://github.com/junegunn/fzf', { 'dir': $HOME . '/bin/apps/fzf' }
+Plug 'junegunn/fzf', { 'dir': $HOME . '/bin/apps/fzf' }
     Plug 'junegunn/fzf.vim'
         Plug 'Konfekt/zappykasten.vim'
 <
 2. Run :PlugInstall in Vim.
-Additionally, install Ripgrep: https://github.com/BurntSushi/ripgrep
+3. Additionally, install Ripgrep: https://github.com/BurntSushi/ripgrep/releases
 
 *Configuration*~
 Set up your Zettelkasten directories in your .vimrc:
@@ -34,7 +33,7 @@ let g:zk_search_paths += [$HOME . '/diary', $HOME . '/notes', $HOME . '/Desktop'
   exist, it will be created with a title derived from your search terms. (Use a
   mapping, say nnoremap m, :<c-u>ZK<cr> for faster access.)
 - In Normal mode, press
-  - gf/K  to open/preview the linked note under the cursor,
+  - K/gf  to preview/open the linked note under the cursor,
   - [<Tab>/[<C-D> to jump to the (tagged) keyword under the cursor, respectively
   - [I/[D to list all its occurrences (see |include-search|).
 - In insert mode:

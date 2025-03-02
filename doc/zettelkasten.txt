@@ -52,7 +52,7 @@ UNC sharepoints depending on g:zk_main_directory.
 KEY BINDINGS in Fuzzy Search Window                *zappykasten-key_bindings*
 
 *   `Ctrl-X`: Create a new note.
-*   `Ctrl-Y`: Yank the selected filenames.
+*   `Ctrl-Y`: Yank the selected filenames (to clipboard as well).
 *   `Ctrl-S`: Split the current window.
 *   `Ctrl-V`: Create a vertical split.
 *   `Ctrl-T`: Open a new tab with the note.

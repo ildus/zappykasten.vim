@@ -57,7 +57,7 @@ To use `Zappykasten`:
 Inside the Fuzzy Search Window opened by `:ZK`, hit
 
 - `Ctrl-X` to create a new note,
-- `Ctrl-Y` to yank the selected filenames,
+- `Ctrl-Y` to yank the selected filenames (to clipboard as well),
 - `Ctrl-S` to open the note in a horizontal split,
 - `Ctrl-V` to open the note in a vertical split, or
 - `Ctrl-T` to open the note in a a new tab.

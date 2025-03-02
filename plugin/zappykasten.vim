@@ -172,21 +172,63 @@ let s:fzf_preview_options = '--preview-window=' . s:fzf_preview_window_options
 
 " }}}
 
-" Separator for yanked files
-let s:yank_separator = get(g:, 'zk_yank_separator', "\n")
+" Add settings and mappings to make gf jump to URL or file {{{1
+" Configure paths for 'gf' command
+let s:glob = ''
+let s:path = ''
+for path in g:zk_search_paths
+    let path = resolve(expand(path))
+    if exists('+shellslash') && !&shellslash
+        let path = tr(path, "\\", "/")
+    endif
+    let s:glob .= path . '/*' . s:ext . ','
+    let s:path .= path . '/*,'
+endfor
 
+augroup zappykasten
+  autocmd!
+  exe 'autocmd BufRead,BufNewFile' s:glob 'call s:zappykasten()'
+augroup END
+
+function! s:zappykasten() abort
+    let &l:path = (empty(&path) ? '' : &path..',')..s:path
+    let &l:suffixesadd =
+                \ empty(&l:suffixesadd) ? s:ext : &l:suffixesadd..',.'..s:ext
+    let &l:include = '\[.\{-}\](\zs\f\+\ze\%('..escape(s:ext,'.')..'\)\?)'
+    let &l:includeexpr = 'v:fname =~# "\\V'..escape(s:ext,'\')..'\\$" ? v:fname : v:fname.."'..s:ext..'"'
+    let &l:define = s:tag
+    command! -buffer -nargs=1 -complete=file Pedit
+                \  exe 'pedit' (<q-args> =~# '\V'..escape(s:ext,'\')..'\$' ? <q-args> : <q-args>..s:ext)
+                \ | autocmd CursorMoved <buffer> ++once wincmd z
+    let &l:keywordprg = ':Pedit'
+    nnoremap <buffer> gf :<c-u>call <sid>gf()<cr>
+    exe 'inoremap <buffer><expr>' s:insert_note_key '<sid>complete_file()'
+endfunction
+
+" unlet s:path
+" unlet s:glob
+
+function! s:gf() abort
+    " Adapted from https://raw.githubusercontent.com/dharmx/nvim/main/plugin/gx.vim
+    let URL = ''
+    if searchpair('\[.\{-}\](', '', ')\zs', 'cbW', '', line('.')) > 0
+        let base = '\%(https\?\|file\)://\S\{-}'
+        let URL = matchstr(getline('.')[col('.')-1:], '\[.\{-}\](\zs'..base..'\ze\(\s\+.\{-}\)\?)')
+        call search('(', 'ce')
+    endif
+    if !empty(URL)
+        exe 'Open' escape(URL, '%#')
+    else
+        normal! gf
+    endif
+endfunction
+" }}}
+
+" Insert link to file into buffer by fuzzy search in insert mode {{{1
 " Key mapping for inserting note links
 let s:insert_note_key = get(g:, 'zk_insert_note_key', '<c-x><c-z>')
 let s:insert_note_path = get(g:, 'zk_insert_note_path', 'name')
 
-" Function to yank data to register
-function! s:yank_to_register(data)
-    let @" = a:data
-    silent! let @* = a:data
-    silent! let @+ = a:data
-endfunction
-
-" insert link to file into buffer by fuzzy search in insert mode {{{1
 " Adapted from https://vi.stackexchange.com/a/28854
 function! s:PathRelativeToDir(path, dir) abort
   " the path leads *inside* a subdirectory of the directory; we're done
@@ -198,7 +240,7 @@ function! s:PathRelativeToDir(path, dir) abort
   endif
 endfunction
 
-" adapted from https://www.frrobert.com/blog/linkingzettelkasten-2020-05-11-0735
+" Adapted from https://www.frrobert.com/blog/linkingzettelkasten-2020-05-11-0735
 function! ZK_make_note_link(l) abort
   let query = a:l[0]
   let array = split(a:l[1], ':')
@@ -251,99 +293,27 @@ function! s:complete_file() abort
 endfunction
 " }}}
 
-" add settings and mappings to make gf jump to URL or file {{{1
-" Configure paths for 'gf' command
-let s:glob = ''
-let s:path = ''
-for path in g:zk_search_paths
-    let path = resolve(expand(path))
-    if exists('+shellslash') && !&shellslash
-        let path = tr(path, "\\", "/")
-    endif
-    let s:glob .= path . '/*' . s:ext . ','
-    let s:path .= path . '/*,'
-endfor
+" Function for creating notes {{{1
+function! s:yank_to_register(data)
+    let path = a:data
+    call setreg('"', path)
 
-augroup zappykasten
-  autocmd!
-  exe 'autocmd BufRead,BufNewFile' s:glob 'call s:zappykasten()'
-augroup END
-
-function! s:zappykasten() abort
-    let &l:path = (empty(&path) ? '' : &path..',')..s:path
-    let &l:suffixesadd =
-                \ empty(&l:suffixesadd) ? s:ext : &l:suffixesadd..',.'..s:ext
-    let &l:include = '\[.\{-}\](\zs\f\+\ze\%('..escape(s:ext,'.')..'\)\?)'
-    let &l:includeexpr = 'v:fname =~# "\\V'..escape(s:ext,'\')..'\\$" ? v:fname : v:fname.."'..s:ext..'"'
-    let &l:define = s:tag
-    command! -buffer -nargs=1 -complete=file Pedit
-                \  exe 'pedit' (<q-args> =~# '\V'..escape(s:ext,'\')..'\$' ? <q-args> : <q-args>..s:ext)
-                \ | autocmd CursorMoved <buffer> ++once wincmd z
-    let &l:keywordprg = ':Pedit'
-    nnoremap <buffer> gf :<c-u>call <sid>gf()<cr>
-    exe 'inoremap <buffer><expr> ' . s:insert_note_key . ' <sid>complete_file()'
-endfunction
-
-" unlet s:path
-" unlet s:glob
-
-function! s:gf() abort
-    " Adapted from https://raw.githubusercontent.com/dharmx/nvim/main/plugin/gx.vim
-    let URL = ''
-    if searchpair('\[.\{-}\](', '', ')\zs', 'cbW', '', line('.')) > 0
-        let base = '\%(https\?\|file\)://\S\{-}'
-        let URL = matchstr(getline('.')[col('.')-1:], '\[.\{-}\](\zs'..base..'\ze\(\s\+.\{-}\)\?)')
-        call search('(', 'ce')
-    endif
-    if !empty(URL)
-        exe 'Open' escape(URL, '%#')
+    let fpath = fnamemodify(path, ":p")
+    if has('win32')
+        silent! call setreg('+', tr(fpath, "/", "\\"))
+    elseif has('win32unix')
+        silent! call system('clip.exe', system('cygpath -w '..shellescape(fpath)))
+    elseif has('unix') && exists('$WSL_DISTRO_NAME')
+        silent! call system('clip.exe', system('wslpath -w '..shellescape(fpath)))
     else
-        normal! gf
+        silent! call setreg('+', fpath)
+        silent! call setreg('*', fpath)
     endif
 endfunction
-" }}}
 
-" command to start fuzzy search {{{1
-silent! command -nargs=* -bang ZK
-      \ call fzf#run(
-          \ fzf#wrap({
-              \ 'sink*': function('ZK_note_handler'),
-              \ 'source': join(
-                    \   s:rg_command
-                    \ + s:rg_musts
-                    \ + s:rg_options
-                    \ + [
-                    \     empty(<q-args>) ? '"\S"' : shellescape(<q-args>),
-                    \     join(map(copy(s:search_paths), 'shellescape(v:val)')),
-                    \     s:format_path_expr,
-                    \     '2>' . s:null_path,
-                    \   ]
-                    \ ),
-              \ 'window': s:window_command,
-              \ s:window_direction: get(g:, 'zk_window_width', &lines < 40 ? '60%' : '40%'),
-              \ 'options': join(s:fzf_musts + s:fzf_options)
-                    \ ..' '..s:fzf_preview_options..':'..get(g:, 'zk_preview_direction', &columns > 100 ? 'right' : 'down')
-                    \ ..' '..'--bind=?:"change-preview-window('.. (&columns > 100 ? 'down' : 'right') ..',border-top|hidden|)"',
-              \ }, <bang>0))
+" Separator for yanked files
+let s:yank_separator = get(g:, 'zk_yank_separator', "\n")
 
-" Let's break down the even more cryptic --preview-window expression
-"
-"     --preview-window '~4,+{2}+4/3,<80(up)'
-"
-" - ~4 makes the top four lines "sticky" header so that they are always
-"   visible regardless of the scroll offset. (Did I mention that you can
-"   scroll the preview window with your mouse/trackpad?)
-" - +{2} - The base offset is extracted from the second token
-" - +4 - We add 4 lines to the base offset to compensate for the header
-" - /3 adjusts the offset so that the matching line is shown at a third
-"   position in the window
-" - <80(up) - This expression specifies the alternative options for the
-"   preview window. By default, the preview window opens on the right side
-"   with 50% width. But if the width is narrower than 80 columns, it will open
-"   above the main window with 50% height.
-" }}}
-
-" function for creating notes {{{1
 function! ZK_note_handler(lines) abort
   " exit if empty
   if a:lines == [] || a:lines == ['','','']
@@ -389,6 +359,46 @@ function! ZK_note_handler(lines) abort
     execute join([cmd, candidate])
   endfor
 endfunction
+" }}}
+
+" Command to start fuzzy search {{{1
+silent! command -nargs=* -bang ZK
+      \ call fzf#run(
+          \ fzf#wrap({
+              \ 'sink*': function('ZK_note_handler'),
+              \ 'source': join(
+                    \   s:rg_command
+                    \ + s:rg_musts
+                    \ + s:rg_options
+                    \ + [
+                    \     empty(<q-args>) ? '"\S"' : shellescape(<q-args>),
+                    \     join(map(copy(s:search_paths), 'shellescape(v:val)')),
+                    \     s:format_path_expr,
+                    \     '2>' . s:null_path,
+                    \   ]
+                    \ ),
+              \ 'window': s:window_command,
+              \ s:window_direction: get(g:, 'zk_window_width', &lines < 40 ? '60%' : '40%'),
+              \ 'options': join(s:fzf_musts + s:fzf_options)
+                    \ ..' '..s:fzf_preview_options..':'..get(g:, 'zk_preview_direction', &columns > 100 ? 'right' : 'down')
+                    \ ..' '..'--bind=?:"change-preview-window('.. (&columns > 100 ? 'down' : 'right') ..',border-top|hidden|)"',
+              \ }, <bang>0))
+
+" Let's break down the even more cryptic --preview-window expression
+"
+"     --preview-window '~4,+{2}+4/3,<80(up)'
+"
+" - ~4 makes the top four lines "sticky" header so that they are always
+"   visible regardless of the scroll offset. (Did I mention that you can
+"   scroll the preview window with your mouse/trackpad?)
+" - +{2} - The base offset is extracted from the second token
+" - +4 - We add 4 lines to the base offset to compensate for the header
+" - /3 adjusts the offset so that the matching line is shown at a third
+"   position in the window
+" - <80(up) - This expression specifies the alternative options for the
+"   preview window. By default, the preview window opens on the right side
+"   with 50% width. But if the width is narrower than 80 columns, it will open
+"   above the main window with 50% height.
 " }}}
 
 " Mark the script as loaded

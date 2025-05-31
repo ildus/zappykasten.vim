@@ -8,6 +8,8 @@ if !executable('rg')
 endif
 
 " Ensure the Vim plug-in `Fzf` is installed
+let s:use_fzf_lua = 0
+
 if exists(':FZF') != 2
     if exists(':FzfLua') != 2
         echomsg 'The Vim plug-in `Fzf` is not installed. See https://github.com/junegunn/fzf for installation instructions.'

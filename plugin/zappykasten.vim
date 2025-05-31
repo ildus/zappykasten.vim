@@ -371,8 +371,10 @@ endfunction
 " Command to start fuzzy search {{{1
 if s:use_fzf_lua
     silent! command -nargs=* -bang ZK lua require('zappykasten.fzf-lua')
-        \.search_notes(vim.fn.eval("s:main_dir"), vim.fn.eval("s:create_note_key"),
-        \   vim.fn.eval("s:yank_key"))
+        \.search_notes(vim.fn.eval("s:main_dir"),
+        \   vim.fn.eval("s:create_note_key"),
+        \   vim.fn.eval("s:yank_key"),
+        \   vim.fn.eval("s:rg_musts + s:rg_options"))
 else
     silent! command -nargs=* -bang ZK
           \ call fzf#run(

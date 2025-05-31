@@ -16,8 +16,6 @@ if exists(':FZF') != 2
     else
         let s:use_fzf_lua = 1
     endif
-else
-    let s:use_fzf_vim = 1
 endif
 
 let s:ext = get(g:, 'zk_default_extension', '.md')
@@ -370,7 +368,9 @@ endfunction
 
 " Command to start fuzzy search {{{1
 if s:use_fzf_lua
-    silent! command -nargs=* -bang ZK lua require('zappykasten.fzf-lua').search_notes()
+    silent! command -nargs=* -bang ZK lua require('zappykasten.fzf-lua')
+        \.search_notes(vim.fn.eval("s:main_dir"), vim.fn.eval("s:create_note_key"),
+        \   vim.fn.eval("s:yank_key"))
 else
     silent! command -nargs=* -bang ZK
           \ call fzf#run(
